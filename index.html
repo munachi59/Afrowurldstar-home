@@ -3,401 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AFROWURLDSTAR Hub</title>
-    <!-- 1. Load Tailwind CSS for styling -->
+    <title>AFROWURLDSTAR Hub | DAWIE Lab</title>
+    <!-- React & Tailwind CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 2. Use Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            /* Prevents the mobile bottom nav from being hidden */
-            padding-bottom: 60px; 
-            min-height: 100vh;
-            background-color: #f9fafa;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #070709; -webkit-tap-highlight-color: transparent; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        input[type="range"] { -webkit-appearance: none; background: transparent; }
+        input[type="range"]::-webkit-slider-thumb { 
+            -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; 
+            background: #6366f1; cursor: pointer; margin-top: -7px; 
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.4); 
         }
+        input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; }
+        .animate-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-gray-50">
-
-    <!-- The root element where React will mount the application -->
+<body>
     <div id="root"></div>
 
-    <!-- 3. Load React and core libraries -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- 4. The entire application logic is embedded here -->
     <script type="text/babel">
-        // --- REACT & ICON SETUP ---
-        // Access React hooks globally
-        const { useState, useMemo } = React;
-        
-        // Inline SVG Icons (Replacing LucideReact dependency for ultimate reliability)
-        const Icon = ({ children, className, strokeWidth = 2, size = 24 }) => (
-            <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width={size} 
-                height={size} 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth={strokeWidth} 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                className={className}
-            >
-                {children}
-            </svg>
-        );
+        const { useState, useMemo, useEffect } = React;
 
-        const NewspaperIcon = (props) => (
-             <Icon {...props}><path d="M4 22h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2zM10 6h4M10 10h4M10 14h4M10 18h4M6 6H4M6 10H4M6 14H4M6 18H4"/></Icon>
-        );
-        const MicroscopeIcon = (props) => (
-             <Icon {...props}><path d="M12 2a3 3 0 0 0-3 3v7c0 1.5 1.5 2.5 3 2.5s3-1 3-2.5V5a3 3 0 0 0-3-3z"/><path d="M6.5 13h11"/><path d="M22 17H2"/><path d="M7 21l2-2"/><path d="M17 21l-2-2"/></Icon>
-        );
-        const ZapIcon = (props) => (
-            <Icon {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></Icon>
-        );
-        const MusicIcon = (props) => (
-            <Icon {...props}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></Icon>
-        );
-        const UsersIcon = (props) => (
-            <Icon {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></Icon>
-        );
-        const TrendingUpIcon = (props) => (
-            <Icon {...props}><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></Icon>
-        );
-        const ClockIcon = (props) => (
-            <Icon {...props}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></Icon>
-        );
-        const SparklesIcon = (props) => (
-             <Icon {...props}><path d="M12 1v2"/><path d="M12 21v2"/><path d="M4.22 4.22l1.42 1.42"/><path d="M18.36 18.36l1.42 1.42"/><path d="M1 12h2"/><path d="M21 12h2"/><path d="M4.22 19.78l1.42-1.42"/><path d="M18.36 5.64l1.42-1.42"/><path d="M12 17v4"/><path d="M12 3v4"/><path d="M17 12h-4"/><path d="M14 14l-2 2l-2-2"/><path d="M14 10l-2-2l-2 2"/></Icon>
-        );
-        const AlertTriangleIcon = (props) => (
-            <Icon {...props}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></Icon>
-        );
-        const CheckCircleIcon = (props) => (
-            <Icon {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></Icon>
-        );
-        const XCircleIcon = (props) => (
-            <Icon {...props}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></Icon>
-        );
-        const BarChart3Icon = (props) => (
-            <Icon {...props}><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></Icon>
-        );
-        const ChevronDownIcon = (props) => (
-            <Icon {...props}><polyline points="6 9 12 15 18 9"/></Icon>
-        );
-        const ChevronUpIcon = (props) => (
-             <Icon {...props}><polyline points="18 15 12 9 6 15"/></Icon>
-        );
-
-
-        // =================================================================
-        // 1. DATA & CONFIGURATIONS
-        // =================================================================
-
-        // F4: Sample Clearance Analyzer Logic
-        const RISK_FACTORS = [
-          { id: 'originality', label: '1. Source Popularity', description: 'Famous track = high scrutiny.', options: [{ text: 'Mainstream hit.', score: 40, color: 'bg-red-500' }, { text: 'Niche/known track.', score: 20, color: 'bg-yellow-500' }, { text: 'Obscure/library track.', score: 5, color: 'bg-green-500' }] },
-          { id: 'length', label: '2. Sample Length', description: 'Over 3 seconds or 4 bars is substantial.', options: [{ text: 'Substantial (>6 seconds).', score: 35, color: 'bg-red-500' }, { text: 'Moderate (3-6 seconds).', score: 15, color: 'bg-yellow-500' }, { text: 'Minimal (<2 seconds).', score: 0, color: 'bg-green-500' }] },
-          { id: 'manipulation', label: '3. Sample Manipulation', description: 'Heavy alteration reduces claim, but doesn\'t eliminate it.', options: [{ text: 'Untouched loop.', score: 25, color: 'bg-red-500' }, { text: 'Pitched, chopped.', score: 10, color: 'bg-yellow-500' }, { text: 'Unrecognizable.', score: 0, color: 'bg-green-500' }] },
-          { id: 'usage', label: '4. Sample Usage', description: 'If it\'s the main hook, risk is high.', options: [{ text: 'Main hook/chorus.', score: 30, color: 'bg-red-500' }, { text: 'Background layer.', score: 15, color: 'bg-yellow-500' }, { text: 'One-shot FX.', score: 5, color: 'bg-green-500' }] },
-          { id: 'commercial', label: '5. Release Type', description: 'Commercial intent is the primary trigger for legal action.', options: [{ text: 'Major commercial release.', score: 40, color: 'bg-red-500' }, { text: 'Independent/mixtape release.', score: 20, color: 'bg-yellow-500' }, { text: 'Non-profit, free release.', score: 0, color: 'bg-green-500' }] },
-        ];
-        const RISK_THRESHOLDS = { LOW: 40, MEDIUM: 85 };
-
-        // Mock Data for The Culture Feed (Gist)
-        const initialNewsItems = [
-          { type: 'GIST', icon: ZapIcon, title: 'Wizkid’s New Album Leak: Producers Scramble to Secure Master Splits', date: 'Just now', color: 'text-red-500', metric: 'RISK ALERT' },
-          { type: 'NEW MUSIC', icon: MusicIcon, title: 'DAWIE’s Pick: Rema drops genre-bending new single “Bounce Back”', date: '30 min ago', color: 'text-green-500', metric: 'HOOK: 5.2s' },
-          { type: 'SPOTLIGHT', icon: UsersIcon, title: 'Rising Star: Tems\' engineer reveals her secret recording workflow', date: '1 hr ago', color: 'text-yellow-500', metric: 'Vocal Stack' },
-          { type: 'GIST', icon: TrendingUpIcon, title: 'TurnTable Charts: Amapiano reigns supreme for 5th consecutive week', date: '2 hr ago', color: 'text-blue-500', metric: 'Tempo Trend' },
-        ];
-
-        // =================================================================
-        // 2. FEATURE COMPONENTS
-        // =================================================================
-
-        // F4 Component (Sample Clearance Analyzer)
-        const SampleClearanceAnalyzer = () => {
-          const [answers, setAnswers] = useState(() => RISK_FACTORS.reduce((acc, factor) => { acc[factor.id] = null; return acc; }, {}));
-          const [expandedFactor, setExpandedFactor] = useState(RISK_FACTORS[0].id);
-
-          const totalScore = useMemo(() => Object.values(answers).reduce((sum, score) => sum + (score || 0), 0), [answers]);
-          const allAnswered = useMemo(() => Object.values(answers).every(score => score !== null), [answers]);
-
-          const riskResult = useMemo(() => {
-            if (!allAnswered) return { level: 'Incomplete', icon: BarChart3Icon, color: 'text-gray-500', message: 'Answer all questions to get your risk analysis.', background: 'bg-gray-100' };
-            if (totalScore <= RISK_THRESHOLDS.LOW) return { level: 'LOW RISK', icon: CheckCircleIcon, color: 'text-green-500', message: 'Low risk. Document your process thoroughly.', background: 'bg-green-100' };
-            if (totalScore <= RISK_THRESHOLDS.MEDIUM) return { level: 'MEDIUM RISK', icon: AlertTriangleIcon, color: 'text-yellow-500', message: 'Medium risk. Seek permission or re-create the part.', background: 'bg-yellow-100' };
-            return { level: 'HIGH RISK', icon: XCircleIcon, color: 'text-red-500', message: 'STOP. Highly likely to result in a copyright claim.', background: 'bg-red-100' };
-          }, [allAnswered, totalScore]);
-
-          const handleSelect = (factorId, score) => {
-            setAnswers(prev => ({ ...prev, [factorId]: score }));
-            const currentIndex = RISK_FACTORS.findIndex(f => f.id === factorId);
-            if (currentIndex < RISK_FACTORS.length - 1) setExpandedFactor(RISK_FACTORS[currentIndex + 1].id);
-            else setExpandedFactor(null);
-          };
-          const handleReset = () => { setAnswers(RISK_FACTORS.reduce((acc, factor) => { acc[factor.id] = null; return acc; }, {})); setExpandedFactor(RISK_FACTORS[0].id); };
-          const toggleExpand = (factorId) => setExpandedFactor(expandedFactor === factorId ? null : factorId);
-          const IconComponent = riskResult.icon;
-
-          return (
-            <div className="p-4 sm:p-6 bg-white rounded-xl shadow-lg">
-              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                <AlertTriangleIcon className="w-5 h-5 mr-2 text-red-500"/>
-                Sample Clearance Risk Analyzer (F4)
-              </h3>
-
-              <div className={`p-4 rounded-lg ${riskResult.background} mb-4`}>
-                <div className="flex items-center space-x-3">
-                  <IconComponent className={`w-6 h-6 ${riskResult.color}`}/>
-                  <div>
-                    <p className="text-sm font-semibold uppercase text-gray-700">DAWIE Risk Status:</p>
-                    <p className={`text-xl font-bold ${riskResult.color}`}>{riskResult.level}</p>
-                  </div>
-                  {allAnswered && <span className="ml-auto text-sm font-bold text-gray-700">Score: {totalScore} / 170</span>}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                {RISK_FACTORS.map((factor) => (
-                  <div key={factor.id} className="border border-gray-200 rounded-md">
-                    <div
-                      className={`p-3 cursor-pointer flex justify-between items-center ${answers[factor.id] !== null ? 'bg-indigo-50 border-l-4 border-indigo-500' : 'hover:bg-gray-50'}`}
-                      onClick={() => toggleExpand(factor.id)}
-                    >
-                      <span className="font-semibold text-sm text-gray-800">{factor.label}</span>
-                      {expandedFactor === factor.id ? <ChevronUpIcon className="w-4 h-4 text-indigo-600"/> : <ChevronDownIcon className="w-4 h-4 text-gray-400"/>}
-                    </div>
-
-                    {expandedFactor === factor.id && (
-                      <div className="p-3 border-t border-gray-200 bg-white space-y-1">
-                        {factor.options.map((option, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => handleSelect(factor.id, option.score)}
-                            className={`w-full text-left p-2 rounded-md border flex justify-between items-center text-xs
-                              ${answers[factor.id] === option.score ? 'border-indigo-600 bg-indigo-100 font-semibold' : 'border-gray-200 hover:bg-gray-50'}`}
-                          >
-                            <span>{option.text}</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {allAnswered && (
-                <button onClick={handleReset} className="w-full mt-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700">
-                  Reset Analysis
-                </button>
-              )}
-            </div>
-          );
+        // Custom Icon Component to wrap Lucide
+        const Icon = ({ name, size = 20, className = "" }) => {
+            useEffect(() => { lucide.createIcons(); }, [name]);
+            return <i data-lucide={name} className={className} style={{ width: size, height: size }}></i>;
         };
 
-        // F3 Placeholder component with promotion
-        const HookTimelineToolPromotion = () => {
-            // Using a simple alert since we cannot use custom modals here
-            const launchAlert = () => { alert("Hook Timeline Tool (F3) - Ready for development in The Lab!"); }; 
-            
+        const GIST_ARTICLES = [
+            {
+                id: 'f3-trending-remix',
+                type: 'TRENDING GIST',
+                title: 'Ruger & Tiwa Savage Remixes: Does your hook hit fast enough?',
+                date: 'Dec 31, 2025',
+                author: 'DAWIE Analysis',
+                color: 'text-orange-400',
+                icon: 'flame',
+                excerpt: 'The remix wave is hitting hard. We analyze why these hooks are winning the 7-second viral war.',
+                content: `The latest remixes from Ruger and Tiwa Savage aren't just winning because of the star power—they are winning because of structural engineering. Our F3 Analysis shows that "Omo To Sexy" hits its primary melodic hook within 5.8 seconds of playback. This is perfectly optimized for the "Scroll-Past" threshold.`,
+                targetTool: 'f3'
+            },
+            {
+                id: 'f4-legal-audit',
+                type: 'LEGAL GIST',
+                title: 'New Sample Laws: The hidden risk in your 2026 projects',
+                date: 'Dec 31, 2025',
+                author: 'Legal Lab',
+                color: 'text-red-400',
+                icon: 'scale',
+                excerpt: 'Avoid the "Auto-C&D" trap. Learn how new streaming algorithms flag uncleared loops.',
+                content: `Starting January 1st, major streaming platforms are introducing a "Zero-Tolerance" fingerprinting system. AI-detection is now sophisticated enough to hear the original source frequency. We have updated the F4 Risk Analyzer to include the 2026 Compliance standards.`,
+                targetTool: 'f4'
+            },
+            {
+                id: 'who-is-dawie',
+                type: 'DAWIE ORIGINAL',
+                title: 'The Blueprint: Who is DAWIE and why the Lab matters',
+                date: 'Official Release',
+                author: 'Editorial',
+                color: 'text-indigo-400',
+                icon: 'user',
+                excerpt: 'Meet the architect behind the AFROWURLDSTAR production philosophy.',
+                content: `DAWIE is a standard of production integrity. The Lab bridges the gap between bedroom producers and major label success by combining industry intuition with technical analysis. "Creativity is the engine, but Data is the steering wheel."`
+            }
+        ];
+
+        const RISK_FACTORS = [
+            { id: 'originality', label: '1. Source Popularity', options: [{ text: 'Mainstream Hit', score: 40 }, { text: 'Niche Track', score: 20 }, { text: 'Obscure/Rare', score: 5 }] },
+            { id: 'length', label: '2. Sample Length', options: [{ text: 'Long (>6s)', score: 35 }, { text: 'Moderate (3-6s)', score: 15 }, { text: 'Short (<2s)', score: 0 }] },
+            { id: 'manipulation', label: '3. Manipulation', options: [{ text: 'Untouched Loop', score: 25 }, { text: 'Pitched/Chopped', score: 10 }, { text: 'Unrecognizable', score: 0 }] },
+            { id: 'commercial', label: '4. Release Strategy', options: [{ text: 'Major Label Distro', score: 30 }, { text: 'Indie Release', score: 15 }, { text: 'Free/Social Only', score: 0 }] },
+        ];
+
+        const App = () => {
+            const [view, setView] = useState('feed');
+            const [selectedArticle, setSelectedArticle] = useState(null);
+            const [activeTool, setActiveTool] = useState('f3');
+            const [showManual, setShowManual] = useState(false);
+
+            // States
+            const [f3Hook, setF3Hook] = useState(7);
+            const [f4Answers, setF4Answers] = useState({ originality: null, length: null, manipulation: null, commercial: null });
+            const [f5Values, setF5Values] = useState({ warmth: 65, air: 45, dynamics: 70, ai_sig: 12 });
+
+            const f3Status = useMemo(() => {
+                if (f3Hook <= 7) return { label: 'ELITE', color: 'text-green-400', bg: 'bg-green-500/10' };
+                if (f3Hook <= 15) return { label: 'DECENT', color: 'text-yellow-400', bg: 'bg-yellow-500/10' };
+                return { label: 'CRITICAL', color: 'text-red-400', bg: 'bg-red-500/10' };
+            }, [f3Hook]);
+
+            const f4Risk = useMemo(() => {
+                const total = Object.values(f4Answers).reduce((s, v) => s + (v || 0), 0);
+                const pending = Object.values(f4Answers).some(v => v === null);
+                if (pending) return { label: 'PENDING', color: 'text-gray-400' };
+                if (total >= 70) return { label: 'HIGH RISK', color: 'text-red-500' };
+                if (total >= 35) return { label: 'MEDIUM RISK', color: 'text-yellow-500' };
+                return { label: 'LOW RISK', color: 'text-green-500' };
+            }, [f4Answers]);
+
+            const f5Readiness = useMemo(() => {
+                const base = (f5Values.warmth + f5Values.air + f5Values.dynamics) / 3;
+                return Math.max(Math.round(base - (f5Values.ai_sig / 2)), 0);
+            }, [f5Values]);
+
             return (
-                <div className="p-4 bg-gray-900 text-white rounded-xl shadow-lg border border-indigo-600">
-                    <div className="flex items-center space-x-3 mb-2">
-                        <ClockIcon className="w-6 h-6 text-yellow-400" />
-                        <h3 className="text-xl font-bold">Hook Timeline Tool (F3)</h3>
-                    </div>
-                    <p className="text-gray-300 text-sm mb-4">
-                        **DAWIE's First Tool:** Analyze where your hook, drums, and bass drop in relation to the critical 7-second skip window. Engineer your streams!
-                    </p>
-                    <button
-                        className="w-full py-2 bg-yellow-500 text-gray-900 font-bold rounded-lg hover:bg-yellow-400 transition duration-150 shadow-md"
-                        onClick={launchAlert} 
-                    >
-                        Launch Hook Tool (F3)
-                    </button>
+                <div className="max-w-md mx-auto min-h-screen bg-[#070709] text-white flex flex-col">
+                    {/* HEADER */}
+                    <header className="p-5 sticky top-0 z-[100] bg-[#070709]/80 backdrop-blur-xl border-b border-white/5 flex items-center justify-between">
+                        {view !== 'feed' ? (
+                            <button onClick={() => {setView('feed'); setShowManual(false);}} className="flex items-center text-indigo-400 font-black text-xs tracking-widest uppercase">
+                                <Icon name="chevron-left" size={18} className="mr-1" /> Back
+                            </button>
+                        ) : (
+                            <h1 className="text-xl font-black italic tracking-tighter bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent uppercase">AFROWURLDSTAR</h1>
+                        )}
+                        <button onClick={() => {setView('lab'); setShowManual(true);}} className="p-2 bg-white/5 rounded-full text-white/40"><Icon name="help-circle" size={18} /></button>
+                    </header>
+
+                    <main className="flex-1 pb-32">
+                        {view === 'feed' && (
+                            <div className="p-5 space-y-8 animate-in">
+                                <div className="bg-gradient-to-br from-indigo-600 to-purple-800 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
+                                    <Icon name="sparkles" size={80} className="absolute -top-4 -right-4 text-white/10 rotate-12" />
+                                    <h2 className="text-2xl font-black mb-2">2026 Lab Access</h2>
+                                    <p className="text-white/70 text-sm mb-6">Test your catalog for viral potential, legal risk, and vocal texture.</p>
+                                    <button onClick={() => setView('lab')} className="w-full py-4 bg-white text-indigo-700 font-black rounded-2xl flex items-center justify-center space-x-2">
+                                        <Icon name="microscope" size={18} /> <span>OPEN TOOLS</span>
+                                    </button>
+                                </div>
+                                <div className="space-y-4">
+                                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] px-1">Culture Feed</h3>
+                                    {GIST_ARTICLES.map(art => (
+                                        <div key={art.id} onClick={() => {setSelectedArticle(art); setView('article')}} className="bg-white/5 border border-white/10 rounded-[2rem] p-6 cursor-pointer">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <span className={`text-[9px] font-black px-3 py-1 bg-white/5 rounded-full ${art.color}`}>{art.type}</span>
+                                                <Icon name={art.icon} size={16} className="text-white/20" />
+                                            </div>
+                                            <h2 className="text-lg font-bold leading-tight mb-2">{art.title}</h2>
+                                            <p className="text-xs text-white/40 line-clamp-2">{art.excerpt}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'article' && selectedArticle && (
+                            <div className="p-6 animate-in">
+                                <span className={`text-[10px] font-black tracking-widest uppercase ${selectedArticle.color}`}>{selectedArticle.type}</span>
+                                <h1 className="text-3xl font-black mt-3 mb-6 leading-tight">{selectedArticle.title}</h1>
+                                <p className="text-xs text-white/40 mb-8 border-b border-white/5 pb-8">By {selectedArticle.author} • {selectedArticle.date}</p>
+                                <div className="space-y-6 text-white/70 text-sm leading-relaxed">
+                                    {selectedArticle.content.split('\n').map((p, i) => <p key={i}>{p}</p>)}
+                                </div>
+                                {selectedArticle.targetTool && (
+                                    <button onClick={() => {setView('lab'); setActiveTool(selectedArticle.targetTool)}} className="mt-12 w-full py-5 bg-indigo-600 text-white font-black rounded-[2rem]">LAUNCH {selectedArticle.targetTool.toUpperCase()} TOOL</button>
+                                )}
+                            </div>
+                        )}
+
+                        {view === 'lab' && (
+                            <div className="p-5 animate-in">
+                                {showManual ? (
+                                    <div className="space-y-6">
+                                        <div className="flex justify-between items-center mb-4"><h2 className="text-3xl font-black italic">THE MANUAL</h2><button onClick={() => setShowManual(false)} className="text-xs font-black text-indigo-400">CLOSE</button></div>
+                                        <div className="bg-white/5 p-6 rounded-[2rem] border border-white/10">
+                                            <h4 className="font-black text-indigo-400 mb-2 uppercase text-xs">F3 Hook Timeline</h4>
+                                            <p className="text-xs text-white/50">Measure when your main melody starts. Hit within 7s for ELITE status.</p>
+                                        </div>
+                                        <div className="bg-white/5 p-6 rounded-[2rem] border border-white/10">
+                                            <h4 className="font-black text-indigo-400 mb-2 uppercase text-xs">F4 Risk Analyzer</h4>
+                                            <p className="text-xs text-white/50">Legal safety audit. Be honest with the 4 factors to avoid C&D flags.</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="flex p-1 bg-white/5 rounded-2xl border border-white/10 mb-8">
+                                            {['f3','f4','f5'].map(t => (
+                                                <button key={t} onClick={() => setActiveTool(t)} className={`flex-1 py-3 rounded-xl text-[10px] font-black ${activeTool === t ? 'bg-indigo-600 text-white shadow-lg' : 'text-white/40'}`}>{t.toUpperCase()}</button>
+                                            ))}
+                                        </div>
+                                        {activeTool === 'f3' && (
+                                            <div className="space-y-6">
+                                                <div className={`${f3Status.bg} p-12 rounded-[3.5rem] text-center border border-white/5`}>
+                                                    <h3 className={`text-6xl font-black ${f3Status.color}`}>{f3Status.label}</h3>
+                                                    <p className="text-[10px] text-white/30 mt-4 font-black uppercase tracking-widest">The 7-Second Rule</p>
+                                                </div>
+                                                <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] space-y-6">
+                                                    <div className="flex justify-between items-center"><label className="text-[10px] font-black text-white/30 uppercase">Hook Start</label><span className="text-2xl font-black text-indigo-400">{f3Hook}s</span></div>
+                                                    <input type="range" min="1" max="30" value={f3Hook} onChange={(e) => setF3Hook(e.target.value)} className="w-full" />
+                                                    <p className="text-[10px] text-indigo-300/40 italic">"Late hooks lose 60% of cold listeners." — DAWIE</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {activeTool === 'f4' && (
+                                            <div className="space-y-4">
+                                                <div className="bg-white/5 p-10 rounded-[3rem] text-center">
+                                                    <h3 className={`text-3xl font-black ${f4Risk.color}`}>{f4Risk.label}</h3>
+                                                </div>
+                                                {RISK_FACTORS.map(f => (
+                                                    <div key={f.id} className="bg-white/5 border border-white/10 rounded-[2rem] p-6">
+                                                        <p className="text-[10px] font-black text-white/20 uppercase mb-4">{f.label}</p>
+                                                        <div className="grid grid-cols-1 gap-2">
+                                                            {f.options.map(opt => (
+                                                                <button key={opt.text} onClick={() => setF4Answers(prev => ({ ...prev, [f.id]: opt.score }))} className={`py-4 px-5 rounded-2xl text-left text-[11px] font-black border transition-all ${f4Answers[f.id] === opt.score ? 'bg-indigo-600 border-indigo-400 text-white' : 'bg-white/5 border-white/5 text-white/30'}`}>{opt.text}</button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                        {activeTool === 'f5' && (
+                                            <div className="space-y-6">
+                                                <div className="bg-indigo-500/10 p-12 rounded-[3.5rem] text-center border border-indigo-500/20">
+                                                    <p className="text-[10px] font-black text-indigo-400 uppercase mb-2">Commercial Readiness</p>
+                                                    <h3 className="text-7xl font-black">{f5Readiness}%</h3>
+                                                </div>
+                                                <div className="bg-white/5 p-8 rounded-[2rem] border border-white/10 space-y-8">
+                                                    {[{id:'warmth', l:'Analog Saturation'},{id:'air', l:'High-Freq Air'},{id:'ai_sig', l:'AI Signature'}].map(m => (
+                                                        <div key={m.id} className="space-y-4">
+                                                            <div className="flex justify-between items-center"><label className="text-[10px] font-black text-white/30 uppercase">{m.l}</label><span className="text-sm font-black text-indigo-400">{f5Values[m.id]}%</span></div>
+                                                            <input type="range" min="0" max="100" value={f5Values[m.id]} onChange={(e) => setF5Values(p => ({...p, [m.id]: parseInt(e.target.value)}))} className={`w-full ${m.id === 'ai_sig' ? 'accent-red-500' : 'accent-indigo-400'}`} />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        )}
+                    </main>
+
+                    <nav className="fixed bottom-0 left-0 right-0 bg-[#070709]/90 backdrop-blur-3xl border-t border-white/5 px-10 py-6 flex justify-around items-center z-[200]">
+                        <button onClick={() => {setView('feed'); setShowManual(false);}} className={view !== 'lab' ? 'text-indigo-400' : 'text-white/20'}><Icon name="newspaper" size={24} /></button>
+                        <button onClick={() => {setView('lab'); setShowManual(false);}} className={view === 'lab' && !showManual ? 'text-indigo-400' : 'text-white/20'}><Icon name="microscope" size={24} /></button>
+                    </nav>
                 </div>
             );
         };
 
-        // F5 Placeholder component with pre-promotion
-        const VocalAnalyzerPromotion = () => {
-            return (
-                <div className="p-4 bg-gray-100 rounded-xl shadow-lg border border-gray-300">
-                    <div className="flex items-center space-x-3 mb-2">
-                        <UsersIcon className="w-6 h-6 text-indigo-600" />
-                        <h3 className="text-xl font-bold text-gray-900">Vocal Performance Analyzer (F5)</h3>
-                    </div>
-                    <p className="text-gray-700 text-sm mb-4">
-                        **PRE-LAUNCH HYPE:** The first tool for artists. Analyze vocal clarity, timing deviation (ms), and dynamic range consistency against chart standards.
-                    </p>
-                    <button
-                        className="w-full py-2 bg-indigo-600 text-white font-bold rounded-lg opacity-70 cursor-not-allowed"
-                        disabled
-                    >
-                        Pre-Register for Early Access
-                    </button>
-                </div>
-            )
-        }
-
-        // Culture Feed Component with News Analysis Card
-        const CultureFeed = ({ setCurrentPage }) => {
-          const newsItems = initialNewsItems;
-
-          // The critical feature: A card that ties the news to a tool (F4)
-          const NewsAnalysisCard = () => (
-            <div className="bg-indigo-600 text-white p-5 rounded-xl shadow-xl mb-6">
-              <div className="flex items-center mb-3">
-                <MicroscopeIcon className="w-6 h-6 mr-2 text-yellow-300"/>
-                <h2 className="text-lg font-bold">DAWIE ANALYSIS: The Wizkid Gist</h2>
-              </div>
-              <p className="text-indigo-100 text-sm mb-4">
-                The master splits leak is a massive legal warning. **DAWIE says** never rely on trust when money is involved. We predict 90% of producers fail the legal check.
-              </p>
-              <button
-                onClick={() => setCurrentPage('lab')}
-                className="w-full py-2 bg-white text-indigo-700 font-bold rounded-lg hover:bg-gray-100 transition duration-150 flex items-center justify-center text-sm shadow-md"
-              >
-                <AlertTriangleIcon className="w-4 h-4 mr-2"/>
-                DAWIE Wants You To Check YOUR Risk Now (F4)
-              </button>
-            </div>
-          );
-
-          return (
-            <div className="p-4 sm:p-6">
-              <h2 className="text-2xl font-extrabold text-gray-900 mb-4 flex items-center">
-                <NewspaperIcon className="w-6 h-6 mr-2 text-indigo-600"/>
-                The Culture Feed & Gist
-              </h2>
-
-              <NewsAnalysisCard />
-
-              <div className="space-y-4">
-                {newsItems.map((item, index) => {
-                  const IconComponent = item.icon;
-                  return (
-                    <div key={index} className="bg-white p-4 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition duration-200">
-                      <div className="flex items-start space-x-3">
-                        <IconComponent className={`w-6 h-6 mt-1 ${item.color}`} />
-                        <div className="flex-1">
-                          <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600">{item.type}</span>
-                          <h3 className="text-lg font-bold text-gray-900 mt-0.5">{item.title}</h3>
-                          <p className="text-sm text-gray-500 mt-1 flex items-center">
-                            <ClockIcon className="w-3 h-3 mr-1"/>
-                            {item.date}
-                          </p>
-                        </div>
-                        <div className="text-right flex-shrink-0">
-                          <span className="text-xs font-bold px-3 py-1 bg-gray-200 rounded-full text-gray-700">
-                            {item.metric}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <button className="w-full mt-6 py-3 bg-indigo-50 text-indigo-600 font-semibold rounded-xl hover:bg-indigo-100 transition duration-150">
-                Load More Gist & Stories
-              </button>
-            </div>
-          );
-        };
-
-
-        // The Lab Component
-        const TheLab = ({ setCurrentPage }) => (
-            <div className="p-4 sm:p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                    <MicroscopeIcon className="w-6 h-6 mr-2 text-indigo-600"/>
-                    The Lab: Producer & Artist Tools
-                </h2>
-
-                {/* Tool List / Promos */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <HookTimelineToolPromotion />
-                    <VocalAnalyzerPromotion />
-                </div>
-
-                {/* Current Live Tool (F4) */}
-                <SampleClearanceAnalyzer />
-            </div>
-        );
-
-
-        // =================================================================
-        // 3. MAIN APPLICATION (App Component)
-        // =================================================================
-
-        const App = () => {
-          const [currentPage, setCurrentPage] = useState('feed'); // 'feed' or 'lab'
-
-          const NavItem = ({ name, icon: Icon, pageKey }) => (
-            <button
-              onClick={() => setCurrentPage(pageKey)}
-              className={`flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl transition duration-200 w-1/2 sm:w-auto
-                ${currentPage === pageKey ? 'text-indigo-600 bg-indigo-50 font-bold shadow-inner' : 'text-gray-500 hover:text-indigo-600 hover:bg-gray-100'}`}
-            >
-              <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
-              <span className="text-xs sm:text-sm mt-1 leading-none">{name}</span>
-            </button>
-          );
-
-          return (
-            <div className="min-h-screen bg-gray-50 font-inter">
-              {/* Header */}
-              <header className="bg-gray-900 text-white shadow-lg p-4 sticky top-0 z-10">
-                <div className="max-w-4xl mx-auto flex justify-between items-center">
-                  <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight flex items-center">
-                    <SparklesIcon className="w-6 h-6 mr-1.5 text-yellow-400"/>
-                    AFROWURLDSTAR
-                  </h1>
-                  <span className="text-sm text-gray-400 hidden sm:block">Culture, Commerce, Code.</span>
-                </div>
-              </header>
-
-              {/* Main Content Area */}
-              <main className="max-w-4xl mx-auto pb-6">
-                {/* Navigation Tabs (Hidden on small screens, using bottom bar) */}
-                <div className="hidden sm:flex bg-white p-4 sticky top-[64px] z-10 border-b border-gray-200 justify-center space-x-4">
-                  <NavItem name="The Culture Feed" icon={NewspaperIcon} pageKey="feed" />
-                  <NavItem name="The Lab (Tools)" icon={MicroscopeIcon} pageKey="lab" />
-                </div>
-
-                {/* Dynamic Content */}
-                {currentPage === 'feed' && <CultureFeed setCurrentPage={setCurrentPage} />}
-                {currentPage === 'lab' && <TheLab setCurrentPage={setCurrentPage} />}
-              </main>
-
-              {/* Mobile Bottom Navigation */}
-              <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl sm:hidden z-20">
-                <div className="flex justify-around py-2">
-                  <NavItem name="Gist" icon={NewspaperIcon} pageKey="feed" />
-                  <NavItem name="The Lab" icon={MicroscopeIcon} pageKey="lab" />
-                </div>
-              </nav>
-            </div>
-          );
-        };
-
-        // Standard React 18 rendering
-        const rootElement = document.getElementById('root');
-        if (rootElement) {
-            // Use ReactDOM.createRoot for React 18
-            ReactDOM.createRoot(rootElement).render(React.createElement(App, null));
-        }
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
-
-
